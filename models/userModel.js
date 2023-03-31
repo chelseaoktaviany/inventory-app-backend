@@ -19,7 +19,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'default.jpeg',
     },
-    OTP: String,
+    otp: {
+      type: Number,
+      expires: '5m',
+      index: true,
+    },
+    otpExpiration: Date,
     role: {
       type: String,
       enum: ['user', 'admin', 'super-admin'],
