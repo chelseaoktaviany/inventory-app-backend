@@ -25,14 +25,14 @@ const generateAndSaveOtp = async (user) => {
 };
 
 // token
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+const signToken = (id, role) => {
+  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
 const createSendToken = (user, statusCode, msg, req, res) => {
-  const token = signToken(user._id);
+  const token = signToken(user._id, user.role);
 
   res.cookie('jwt', token, {
     expires: new Date(
@@ -46,6 +46,7 @@ const createSendToken = (user, statusCode, msg, req, res) => {
     msg,
     data: {
       id: user._id,
+      role: user.role,
     },
     token,
   });
@@ -96,6 +97,55 @@ exports.signUp = catchAsync(async (req, res, next) => {
   } catch (err) {
     existedUser.otp = undefined;
     existedUser.save({ validateBeforeSave: false });
+
+    return next(
+      new AppError(
+        'An error has been occurred while sending e-mail! Please try again later',
+        500
+      )
+    );
+  }
+});
+
+/**
+ * Sign in user, setelah data valid, dapat melakukan aktivasi akun pengguna
+ * @async
+ * @method
+ * @field - {emailAddress - alamat e-mail, role - peran pengguna}
+ * @returns status, msg, data:{user}
+ * @throws - 401 (E-mail not registered) & 500 (Internal Server Error)
+ */
+exports.signIn = catchAsync(async (req, res, next) => {
+  emailAddress = req.body.emailAddress;
+
+  const { role } = req.body;
+
+  const user = await User.findOne({ emailAddress, role });
+
+  if (!user) {
+    return next(new AppError('E-mail not registered'));
+  }
+
+  try {
+    // send email OTP
+    user.otp = await generateAndSaveOtp(user);
+
+    // email untuk OTP
+    await new Email(user).sendOTP();
+
+    // mengirim response
+    res.status(201).json({
+      status: 0,
+      msg: 'We have sent the code to your e-mail',
+      data: {
+        username: user.username,
+        emailAddress: user.emailAddress,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    user.otp = undefined;
+    user.save({ validateBeforeSave: false });
 
     return next(
       new AppError(
