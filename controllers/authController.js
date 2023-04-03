@@ -80,6 +80,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
   try {
     // send email OTP
     newUser.otp = await generateAndSaveOtp(newUser);
+    await newUser.save({ validateBeforeSave: false });
 
     // email untuk OTP
     await new Email(newUser).sendOTP();
@@ -96,7 +97,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
     });
   } catch (err) {
     existedUser.otp = undefined;
-    existedUser.save({ validateBeforeSave: false });
+    await existedUser.save({ validateBeforeSave: false });
 
     return next(
       new AppError(
@@ -129,6 +130,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
   try {
     // send email OTP
     user.otp = await generateAndSaveOtp(user);
+    await user.save({ validateBeforeSave: false });
 
     // email untuk OTP
     await new Email(user).sendOTP();
@@ -145,7 +147,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
     });
   } catch (err) {
     user.otp = undefined;
-    user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
     return next(
       new AppError(
@@ -174,7 +176,7 @@ exports.resendOTP = catchAsync(async (req, res, next) => {
     }
 
     user.otp = await generateAndSaveOtp(user);
-    user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
     // e-mail untuk OTP
     await new Email(user).sendOTP();
@@ -187,6 +189,7 @@ exports.resendOTP = catchAsync(async (req, res, next) => {
   } catch (err) {
     const user = await User.findOne({ emailAddress });
     user.otp = undefined;
+    await user.save({ validateBeforeSave: false });
 
     return next(
       new AppError(
@@ -228,7 +231,7 @@ exports.verifyOTP = catchAsync(async (req, res, next) => {
   if (user.otpExpiration < new Date()) {
     user.otp = undefined;
     user.otpExpiration = undefined;
-    user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
     return next(new AppError('OTP sudah kedaluarsa', 401));
   }
@@ -236,7 +239,7 @@ exports.verifyOTP = catchAsync(async (req, res, next) => {
   // otp is valid
   user.otp = undefined;
   user.otpExpiration = undefined;
-  user.save({ validateBeforeSave: true });
+  await user.save({ validateBeforeSave: true });
 
   // create token
   createSendToken(user, 200, 'Your account has been verified', req, res);
