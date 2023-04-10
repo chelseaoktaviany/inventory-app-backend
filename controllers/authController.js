@@ -247,6 +247,13 @@ exports.verifyOTP = catchAsync(async (req, res, next) => {
 });
 
 // sign out
+exports.logout = catchAsync(async (req, res, next) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 0, msg: 'Success' });
+});
 
 // protect
 exports.protect = catchAsync(async (req, res, next) => {

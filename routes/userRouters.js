@@ -16,18 +16,25 @@ const router = express.Router();
 // authentication
 router.post('/signUp', authController.signUp);
 router.post('/signIn', authController.signIn);
+router.post('/signOut', authController.signOut);
 
 // otp
 router.get('/resendOTP', resendOTPRateLimiter, authController.resendOTP);
 router.post('/verified', verifyOTPRateLimiter, authController.verifyOTP);
 
-// router protection (nanti)
+// router protection
 router.use(authController.protect);
 
-// using restriction middleware (nanti)
+// using restriction middleware
 router.use(authController.restrictTo('super-admin'));
 
 // user management
 router.route('/').get(userController.getAllUsers);
+
+router
+  .route('/:id')
+  .get(userController.getUser)
+  .patch(userController.editUser)
+  .delete(userController.deleteUser);
 
 module.exports = router;
