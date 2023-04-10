@@ -10,6 +10,11 @@ router.use(authController.protect);
 
 router.use(authController.restrictTo('admin'));
 
+// get reports
+router
+  .route('/prod-reports/:month/:year')
+  .get(productController.getProdReports);
+
 router
   .route('/')
   .get(productController.getAllProducts)

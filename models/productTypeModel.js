@@ -1,3 +1,4 @@
+/* eslint-disable no-else-return */
 const mongoose = require('mongoose');
 
 const productTypeSchema = mongoose.Schema(
@@ -25,19 +26,26 @@ const productTypeSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please enter the current location of the product!'],
     },
-    condition: {
-      condition_good: {
-        type: Number,
-        required: [true, 'Please enter the condition of the products'],
-      },
-      condition_bad: {
-        type: Number,
-        required: [true, 'Please enter the condition of the products!'],
-      },
+    conditionGood: {
+      type: Number,
+      required: [true, 'Please enter the condition of the products'],
+    },
+    conditionBad: {
+      type: Number,
+      required: [true, 'Please enter the condition of the products'],
     },
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+// define virtual property
+productTypeSchema.virtual('productTypeCondition').get(function () {
+  if (this.conditionGood >= this.conditionBad) {
+    return 'Good';
+  } else {
+    return 'Bad';
+  }
+});
 
 productTypeSchema.pre(/^find/, function (next) {
   this.start = Date.now();
