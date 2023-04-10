@@ -53,7 +53,7 @@ productTypeSchema.pre(/^find/, function (next) {
 });
 
 productTypeSchema.pre(/^find/, function (next) {
-  this.populate([{ path: 'vendorProduct', select: '-__v' }]);
+  this.populate([{ path: 'vendorProduct', select: 'vendorName' }]);
 
   next();
 });

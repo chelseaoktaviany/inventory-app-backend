@@ -75,11 +75,11 @@ productSchema.pre(/^find/, function (next) {
   this.populate([
     {
       path: 'category',
-      select: '-__v',
+      select: 'categoryName',
     },
-    { path: 'subCategory', select: '-__v' },
-    { path: 'typeProduct', select: '-__v' },
-    { path: 'vendorProduct', select: '-__v' },
+    { path: 'subCategory', select: 'subCategoryName' },
+    { path: 'typeProduct', select: 'type' },
+    { path: 'vendorProduct', select: 'vendorName' },
   ]);
 
   next();
