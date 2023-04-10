@@ -56,7 +56,7 @@ exports.createOne = (Model, message) =>
 exports.getOne = (Model, popOptions, message) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
-    if (popOptions) query = query.populate(popOptions);
+    if (popOptions) query = query.populate(popOptions).select('-__v');
 
     const doc = await query;
 
