@@ -13,8 +13,9 @@ exports.getAllProducts = factory.getAll(
   'Retrieved data products successfully'
 );
 
-exports.getProduct = factory.getAll(
+exports.getProduct = factory.getOne(
   Product,
+  { path: 'group' },
   'Retrieved a data product successfully'
 );
 
