@@ -25,7 +25,7 @@ router.post('/verified', verifyOTPRateLimiter, authController.verifyOTP);
 router.use(authController.protect);
 
 // using restriction middleware (nanti)
-router.use(authController.restrictTo('admin', 'super-admin'));
+router.use(authController.restrictTo('super-admin'));
 
 // user management
 router.route('/').get(userController.getAllUsers);

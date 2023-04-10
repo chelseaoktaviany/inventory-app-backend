@@ -13,11 +13,17 @@ const cors = require('cors');
 
 require('dotenv').config({ path: './config.env' });
 
-// untuk router & error handling
+// untuk error handling
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
-const testAPIRouters = require('./routes/testAPIRouters');
+
+// routers
 const userRouters = require('./routes/userRouters');
+const productRouters = require('./routes/productRouters');
+const productTypeRouters = require('./routes/productTypeRouters');
+const categoryRouters = require('./routes/categoryRouters');
+const subCategoryRouters = require('./routes/subCategoryRouters');
+const vendorRouters = require('./routes/vendorRouters');
 
 // memulai aplikasi express
 const app = express();
@@ -129,7 +135,11 @@ app.use(mongoSanitize());
 app.use(xss());
 
 // menggunakan hpp app.use(hpp());
-app.use(hpp({ whitelist: [] }));
+app.use(
+  hpp({
+    whitelist: ['quantity', 'eachPrice', 'condition_good', 'condition_bad'],
+  })
+);
 
 // menggunakan compression
 app.use(compression());
@@ -141,8 +151,12 @@ app.use((req, res, next) => {
 });
 
 // api routes
-app.use('/v1/testAPI', testAPIRouters);
 app.use('/v1/users', userRouters);
+app.use('/v1/products', productRouters);
+app.use('/v1/productTypes', productTypeRouters);
+app.use('/v1/categories', categoryRouters);
+app.use('/v1/subCategories', subCategoryRouters);
+app.use('/v1/vendors', vendorRouters);
 
 // jika endpoint tidak ditemukan
 app.all('*', (req, res, next) => {
