@@ -247,7 +247,7 @@ exports.verifyOTP = catchAsync(async (req, res, next) => {
 });
 
 // sign out
-exports.logout = catchAsync(async (req, res, next) => {
+exports.signOut = catchAsync(async (req, res, next) => {
   res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
