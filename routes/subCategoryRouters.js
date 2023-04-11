@@ -14,15 +14,19 @@ router
   .route('/')
   .get(subCategoryController.getAllSubCategories)
   .post(
-    subCategoryController.uploadImage,
-    subCategoryController.resizeImage,
+    subCategoryController.uploadSubCategImage,
+    subCategoryController.resizeSubCategImage,
     subCategoryController.createSubCategory
   );
 
 router
   .route('/:id')
   .get(subCategoryController.getSubCategory)
-  .patch(subCategoryController.updateSubCategory)
+  .patch(
+    subCategoryController.uploadSubCategImage,
+    subCategoryController.resizeSubCategImage,
+    subCategoryController.updateSubCategory
+  )
   .delete(subCategoryController.deleteSubCategory);
 
 module.exports = router;
