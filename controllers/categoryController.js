@@ -12,8 +12,9 @@ exports.getAllCategories = factory.getAll(
   'Retrieved data categories successfully'
 );
 
-exports.getCategory = factory.getAll(
+exports.getCategory = factory.getOne(
   CategoryProduct,
+  { path: 'categoryName' },
   'Retrieved data category successfully'
 );
 

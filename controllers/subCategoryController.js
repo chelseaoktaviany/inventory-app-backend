@@ -19,20 +19,20 @@ const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
     cb(null, true);
   } else {
-    cb(new AppError('File must be in an image file format', 400));
+    cb(new AppError('File must be in an image file format', 400), false);
   }
 };
 
-const upload = multer({ storage: multerStorage, filefilter: multerFilter });
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
-exports.uploadImage = upload.single('subCategoryImage');
+exports.uploadSubCategImage = upload.single('subCategoryImage');
 
-exports.resizeImage = catchAsync(async (req, res, next) => {
+exports.resizeSubCategImage = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
   req.body.subCategoryImage = `sub-category-${Date.now()}.jpeg`;
 
-  await sharp(req.file.buffer)
+  sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
@@ -46,8 +46,9 @@ exports.getAllSubCategories = factory.getAll(
   'Retrieved data sub categories successfully'
 );
 
-exports.getSubCategory = factory.getAll(
+exports.getSubCategory = factory.getOne(
   SubCategoryProduct,
+  { path: 'category' },
   'Retrieved data sub category successfully'
 );
 
