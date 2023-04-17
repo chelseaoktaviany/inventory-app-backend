@@ -3,6 +3,7 @@ const factory = require('./handleFactory');
 
 // models
 const Product = require('../models/productModel');
+const ProductType = require('../models/productTypeModel');
 
 // utils
 const catchAsync = require('../utils/catchAsync');
@@ -42,47 +43,83 @@ exports.getProdReports = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid month or year', 400));
   }
 
-  const reports = await Product.aggregate([
-    { $unwind: '$purchaseDate' },
+  const pipeline = [
     {
-      $match: {
-        purchaseDate: {
-          $gte: new Date(`${year}-${month}-01`),
-          $lte: new Date(`${year}-${month}-31`),
-        },
+      $facet: {
+        products: [
+          {
+            $match: {
+              purchaseDate: {
+                $gte: new Date(`${year}-${month}-01`),
+                $lte: new Date(`${year}-${month}-31`),
+              },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                month: { $month: '$purchaseDate' },
+                year: { $year: '$purchaseDate' },
+              },
+              numProducts: { $sum: 1 },
+              totalPrice: { $sum: '$eachPrice' },
+              numCondGood: {
+                $sum: '$conditionGood',
+              },
+              numCondBad: {
+                $sum: '$conditionBad',
+              },
+            },
+          },
+        ],
+        productTypes: [
+          {
+            $match: {
+              purchaseDateProductType: {
+                $gte: new Date(`${year}-${month}-01`),
+                $lte: new Date(`${year}-${month}-31`),
+              },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                month: { $month: '$purchaseDateProductType' },
+                year: { $year: '$purchaseDateProductType' },
+              },
+              numProducts: { $sum: 1 },
+              totalPrice: { $sum: '$eachPriceProductType' },
+              numCondGood: {
+                $sum: '$conditionGoodProductType',
+              },
+              numCondBad: {
+                $sum: '$conditionBadProductType',
+              },
+            },
+          },
+        ],
       },
     },
     {
-      $group: {
-        _id: {
-          month: { $month: '$purchaseDate' },
-          year: { $year: '$purchaseDate' },
-        },
-        numProducts: { $sum: 1 },
-        totalPrice: { $sum: '$eachPrice' },
-        numCondGood: {
-          $sum: '$conditionGood',
-        },
-        numCondBad: {
-          $sum: '$conditionBad',
-        },
+      $project: {
+        products: { $arrayElemAt: ['$products', 0] },
+        productTypes: { $arrayElemAt: ['$productTypes', 0] },
       },
     },
-    {
-      $addFields: { month: '$_id' },
-    },
-    {
-      $project: { _id: 0 },
-    },
-    {
-      $sort: { numProdStarts: -1 },
-    },
-  ]);
+  ];
+
+  const productReports = await Product.aggregate(pipeline);
+  const productTypeReports = await ProductType.aggregate(pipeline);
 
   // send response
   res.status(200).json({
     status: 0,
-    msg: 'Retrieved data product  report successfully',
-    data: reports,
+    msg: 'Retrieved data product report successfully',
+    data: [productReports, productTypeReports],
   });
+
+  return {
+    products: productReports[0].products,
+    productTypes: productTypeReports[0].productTypes,
+  };
 });
