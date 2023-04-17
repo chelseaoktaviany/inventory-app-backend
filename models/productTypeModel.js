@@ -13,24 +13,24 @@ const productTypeSchema = mongoose.Schema(
       ref: 'VendorProduct',
       required: [true, 'Please select the vendor!'],
     },
-    purchaseDate: Date,
-    quantity: {
+    purchaseDateProductType: Date,
+    quantityProductType: {
       type: Number,
       required: [true, 'Please enter the numbers of product'],
     },
-    eachPrice: {
+    eachPriceProductType: {
       type: Number,
       required: [true, 'Please enter the product unit price!'],
     },
-    currentLocation: {
+    currentLocationProductType: {
       type: String,
       required: [true, 'Please enter the current location of the product!'],
     },
-    conditionGood: {
+    conditionGoodProductType: {
       type: Number,
       required: [true, 'Please enter the condition of the products'],
     },
-    conditionBad: {
+    conditionBadProductType: {
       type: Number,
       required: [true, 'Please enter the condition of the products'],
     },
@@ -40,7 +40,7 @@ const productTypeSchema = mongoose.Schema(
 
 // define virtual property
 productTypeSchema.virtual('productTypeCondition').get(function () {
-  if (this.conditionGood >= this.conditionBad) {
+  if (this.conditionGoodProductType >= this.conditionBadProductType) {
     return 'Good';
   } else {
     return 'Bad';
