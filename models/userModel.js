@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
       default: 'default.jpeg',
     },
     otp: {
-      type: Number,
+      type: String,
       expires: '5m',
       index: true,
     },
