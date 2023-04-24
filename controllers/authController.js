@@ -125,7 +125,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ emailAddress, role });
 
   if (!user) {
-    return next(new AppError('E-mail not registered'));
+    return next(new AppError('E-mail not registered', 401));
   }
 
   try {
@@ -137,7 +137,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
     await new Email(user).sendOTP();
 
     // mengirim response
-    res.status(201).json({
+    res.status(200).json({
       status: 0,
       msg: 'We have sent the code to your e-mail',
       data: {
