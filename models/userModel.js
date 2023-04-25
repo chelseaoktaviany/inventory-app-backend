@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema(
     otpExpiration: Date,
     role: {
       type: String,
-      enum: ['user', 'admin', 'super-admin'],
-      default: 'user',
+      enum: ['User', 'Admin', 'Super Admin'],
+      default: 'User',
     },
   },
   { timestamps: true, versionKey: false }
