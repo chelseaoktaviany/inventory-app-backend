@@ -219,7 +219,7 @@ exports.verifyOTP = catchAsync(async (req, res, next) => {
   }
 
   // memeriksa jika otp benar
-  if (otp !== user.otp) {
+  if (!otp || !user.otp) {
     return next(
       new AppError(
         'Invalid OTP! Please click resend OTP to get OTP code again',
