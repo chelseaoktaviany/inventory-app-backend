@@ -13,7 +13,7 @@ router
   .route('/prod-reports/:month/:year')
   .get(productController.getProdReports);
 
-router.use(authController.restrictTo('admin'));
+router.use(authController.restrictTo('Admin'));
 
 router
   .route('/')

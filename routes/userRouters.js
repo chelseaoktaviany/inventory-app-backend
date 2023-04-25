@@ -28,7 +28,7 @@ router.use(authController.protect);
 router.get('/me', userController.getMe, userController.getUser);
 
 // using restriction middleware
-router.use(authController.restrictTo('super-admin'));
+// router.use(authController.restrictTo('Super Admin'));
 
 // user management
 router.route('/').get(userController.getAllUsers);
