@@ -15,6 +15,8 @@ router
   .get(vendorController.getAllVendors)
   .post(vendorController.createVendor);
 
+router.route('/:vendorSlug').get(vendorController.getVendorByName);
+
 router
   .route('/:id')
   .get(vendorController.getVendor)
