@@ -15,6 +15,8 @@ router
   .get(categoryController.getAllCategories)
   .post(categoryController.createCategory);
 
+router.route('/:categorySlug').get(categoryController.getCategoryByName);
+
 router
   .route('/:id')
   .get(categoryController.getCategory)
