@@ -13,22 +13,22 @@ const productSchema = mongoose.Schema(
       required: [true, 'Please choose the group!'],
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.String,
       ref: 'CategoryProduct',
       required: [true, 'Fill in the category first!'],
     },
     subCategory: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.String,
       ref: 'SubCategoryProduct',
       required: [true, 'Fill in the sub-category first!'],
     },
     typeProduct: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.String,
       ref: 'ProductType',
       required: [true, 'Please enter the type of the product!'],
     },
     vendorProduct: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.String,
       ref: 'VendorProduct',
       required: [true, 'Please select the vendor!'],
     },
