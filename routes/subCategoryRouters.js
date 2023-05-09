@@ -20,6 +20,10 @@ router
   );
 
 router
+  .route('/:subCategorySlug')
+  .get(subCategoryController.getSubCategoryByName);
+
+router
   .route('/:id')
   .get(subCategoryController.getSubCategory)
   .patch(
