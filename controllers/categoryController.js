@@ -18,6 +18,20 @@ exports.getCategory = factory.getOne(
   'Retrieved data category successfully'
 );
 
+exports.getCategoryByName = catchAsync(async (req, res, next) => {
+  const category = await CategoryProduct.findOne({
+    categorySlug: req.params.categorySlug,
+  });
+  if (!category) {
+    return next(new AppError('Category not found', 404));
+  }
+  return res.status(200).json({
+    status: 0,
+    msg: 'Retrieved data category successfully',
+    data: category,
+  });
+});
+
 exports.createCategory = catchAsync(async (req, res, next) => {
   const { categoryName } = req.body;
 
