@@ -52,6 +52,20 @@ exports.getSubCategory = factory.getOne(
   'Retrieved data sub category successfully'
 );
 
+exports.getSubCategoryByName = catchAsync(async (req, res, next) => {
+  const subCategory = await SubCategoryProduct.findOne({
+    subCategorySlug: req.params.subCategorySlug,
+  });
+  if (!subCategory) {
+    return next(new AppError('Sub category not found', 404));
+  }
+  return res.status(200).json({
+    status: 0,
+    msg: 'Retrieved data sub category successfully',
+    data: subCategory,
+  });
+});
+
 exports.createSubCategory = factory.createOne(
   SubCategoryProduct,
   'Add sub category success'
