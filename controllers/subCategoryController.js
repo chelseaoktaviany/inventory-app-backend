@@ -2,6 +2,8 @@
 const multer = require('multer');
 const sharp = require('sharp');
 
+const path = require('path');
+
 // controllers
 const factory = require('./handleFactory');
 
@@ -13,33 +15,44 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
 // multer
-const multerStorage = multer.memoryStorage();
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/sub-categories/');
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `sub-category-${Date.now()}${ext}`);
+  },
+});
 
-const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) {
+// multer filter
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/jpg' ||
+    file.mimetype === 'image/jpeg'
+  ) {
     cb(null, true);
   } else {
     cb(new AppError('File must be in an image file format', 400), false);
   }
 };
 
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 1024 * 1024 * 2 },
+});
 
 exports.uploadSubCategImage = upload.single('subCategoryImage');
 
-exports.resizeSubCategImage = catchAsync(async (req, res, next) => {
-  if (!req.file) return next();
-
-  req.body.subCategoryImage = `sub-category-${Date.now()}.jpeg`;
-
-  sharp(req.file.buffer)
-    .resize(500, 500)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(`public/img/sub-categories/${req.body.subCategoryImage}`);
-
-  next();
-});
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
 
 exports.getAllSubCategories = factory.getAll(
   SubCategoryProduct,
@@ -66,10 +79,33 @@ exports.getSubCategoryByName = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createSubCategory = factory.createOne(
-  SubCategoryProduct,
-  'Add sub category success'
-);
+exports.createSubCategory = catchAsync(async (req, res, next) => {
+  const filteredBody = filterObj(req.body, 'category', 'subCategoryName');
+
+  const file = req.file.path.replace(/\\/g, '/');
+  const outputPath = path
+    .join('uploads', 'sub-categories', `resized-${req.file.filename}`)
+    .replace(/\\/g, '/');
+
+  sharp(file).resize({ width: 500, height: 500 }).toFile(outputPath);
+
+  const subCategory = await SubCategoryProduct.create({
+    category: filteredBody.category,
+    subCategoryName: filteredBody.subCategoryName,
+    subCategoryImage: outputPath,
+  });
+
+  res.status(201).json({
+    status: 0,
+    msg: 'Add sub category success',
+    data: { subCategory },
+  });
+});
+
+// exports.createSubCategory = factory.createOne(
+//   SubCategoryProduct,
+//   'Add sub category success'
+// );
 
 exports.updateSubCategory = factory.updateOne(
   SubCategoryProduct,

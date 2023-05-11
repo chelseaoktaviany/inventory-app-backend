@@ -5,7 +5,7 @@ const { generateNameSlug } = require('../utils/slugify');
 const subCategorySchema = new mongoose.Schema(
   {
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.String,
       ref: 'CategoryProduct',
       required: [true, 'Fill in the category first!'],
     },
@@ -28,14 +28,14 @@ subCategorySchema.pre('save', function (next) {
   next();
 });
 
-subCategorySchema.pre(/^find/, function (next) {
-  this.populate({
-    path: 'category',
-    select: 'categoryName categorySlug',
-  });
+// subCategorySchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: 'category',
+//     select: 'categoryName categorySlug',
+//   });
 
-  next();
-});
+//   next();
+// });
 
 // indexing
 subCategorySchema.index({ subCategorySlug: 1 });

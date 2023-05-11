@@ -15,7 +15,6 @@ router
   .get(subCategoryController.getAllSubCategories)
   .post(
     subCategoryController.uploadSubCategImage,
-    subCategoryController.resizeSubCategImage,
     subCategoryController.createSubCategory
   );
 
@@ -28,7 +27,6 @@ router
   .get(subCategoryController.getSubCategory)
   .patch(
     subCategoryController.uploadSubCategImage,
-    subCategoryController.resizeSubCategImage,
     subCategoryController.updateSubCategory
   )
   .delete(subCategoryController.deleteSubCategory);

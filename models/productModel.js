@@ -12,12 +12,12 @@ const productSchema = mongoose.Schema(
       enum: ['Passive', 'Active'],
       required: [true, 'Please choose the group!'],
     },
-    category: {
+    categoryName: {
       type: mongoose.Schema.Types.String,
       ref: 'CategoryProduct',
       required: [true, 'Fill in the category first!'],
     },
-    subCategory: {
+    subCategoryName: {
       type: mongoose.Schema.Types.String,
       ref: 'SubCategoryProduct',
       required: [true, 'Fill in the sub-category first!'],
@@ -27,7 +27,7 @@ const productSchema = mongoose.Schema(
       ref: 'ProductType',
       required: [true, 'Please enter the type of the product!'],
     },
-    vendorProduct: {
+    vendorName: {
       type: mongoose.Schema.Types.String,
       ref: 'VendorProduct',
       required: [true, 'Please select the vendor!'],
@@ -71,19 +71,19 @@ productSchema.pre(/^find/, function (next) {
   next();
 });
 
-productSchema.pre(/^find/, function (next) {
-  this.populate([
-    {
-      path: 'category',
-      select: 'categoryName',
-    },
-    { path: 'subCategory', select: 'subCategoryName' },
-    { path: 'typeProduct', select: 'type' },
-    { path: 'vendorProduct', select: 'vendorName' },
-  ]);
+// productSchema.pre(/^find/, function (next) {
+//   this.populate([
+//     {
+//       path: 'category',
+//       select: 'categoryName',
+//     },
+//     { path: 'subCategory', select: 'subCategoryName' },
+//     { path: 'typeProduct', select: 'type' },
+//     { path: 'vendorProduct', select: 'vendorName' },
+//   ]);
 
-  next();
-});
+//   next();
+// });
 
 const Product = mongoose.model('Product', productSchema);
 
