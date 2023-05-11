@@ -44,7 +44,8 @@ app.use(cors());
 app.options('*', cors());
 
 // menyajikan public
-app.use(express.static(path.join(__dirname, 'public')));
+const dirname = path.resolve();
+app.use('/v1/im/uploads', express.static(path.join(dirname, 'uploads')));
 
 // menggunakan helmet
 app.use(helmet());
