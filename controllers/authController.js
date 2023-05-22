@@ -91,6 +91,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
       status: 0,
       msg: 'We have sent the code to your e-mail',
       data: {
+        userId: newUser.userId,
         username: newUser.username,
         emailAddress: newUser.emailAddress,
         role: newUser.role,
