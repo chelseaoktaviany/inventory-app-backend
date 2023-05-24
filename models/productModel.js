@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const productSchema = mongoose.Schema(
   {
+    productId: { type: String, unique: true },
     brandName: {
       type: String,
       required: [true, 'Please enter the product name!'],
@@ -56,6 +57,21 @@ const productSchema = mongoose.Schema(
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+// pre hook
+productSchema.pre('save', function (next) {
+  const doc = this;
+  if (doc.isNew) {
+    // code here
+    const categoryId = doc.categoryId;
+    const paddedCategoryId = categoryId.padStart(2, '0'); // Ensure two-digit category number
+    const productId = `${paddedCategoryId}-${Math.floor(
+      100000000000 + Math.random() * 900000000000
+    )}`; // Generate random four-digit number
+    doc.productId = productId;
+  }
+  next();
+});
 
 // define virtual property
 productSchema.virtual('productCondition').get(function () {

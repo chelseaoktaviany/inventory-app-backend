@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { generateNameSlug } = require('../utils/slugify');
 
 const vendorProductSchema = new mongoose.Schema({
+  vendorId: { type: String, unique: true },
   vendorName: {
     type: String,
     required: [true, 'Please fill the category name!'],

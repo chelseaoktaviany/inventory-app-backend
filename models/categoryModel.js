@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { generateNameSlug } = require('../utils/slugify');
 
 const categorySchema = new mongoose.Schema({
+  categoryId: { type: String, unique: true },
   categoryName: {
     type: String,
     required: [true, 'Please fill the category name!'],

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const productTypeSchema = mongoose.Schema(
   {
+    productTypeId: { type: String, unique: true },
     type: {
       type: String,
       required: [true, 'Please enter the type of the product!'],

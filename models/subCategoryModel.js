@@ -4,6 +4,7 @@ const { generateNameSlug } = require('../utils/slugify');
 
 const subCategorySchema = new mongoose.Schema(
   {
+    subCategoryId: { type: String, unique: true },
     category: {
       type: mongoose.Schema.Types.String,
       ref: 'CategoryProduct',
