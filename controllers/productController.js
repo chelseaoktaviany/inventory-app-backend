@@ -122,54 +122,54 @@ exports.getProdReports = catchAsync(async (req, res, next) => {
             },
           },
         ],
-        productTypes: [
-          {
-            $match: {
-              purchaseDateProductType: {
-                $gte: new Date(`${year}-${month}-01`),
-                $lte: new Date(`${year}-${month}-31`),
-              },
-            },
-          },
-          {
-            $group: {
-              _id: {
-                month: { $month: '$purchaseDateProductType' },
-                year: { $year: '$purchaseDateProductType' },
-              },
-              numProducts: { $sum: 1 },
-              totalPrice: { $sum: '$eachPriceProductType' },
-              numCondGood: {
-                $sum: '$conditionGoodProductType',
-              },
-              numCondBad: {
-                $sum: '$conditionBadProductType',
-              },
-            },
-          },
-        ],
+        // productTypes: [
+        //   {
+        //     $match: {
+        //       purchaseDateProductType: {
+        //         $gte: new Date(`${year}-${month}-01`),
+        //         $lte: new Date(`${year}-${month}-31`),
+        //       },
+        //     },
+        //   },
+        //   {
+        //     $group: {
+        //       _id: {
+        //         month: { $month: '$purchaseDateProductType' },
+        //         year: { $year: '$purchaseDateProductType' },
+        //       },
+        //       numProducts: { $sum: 1 },
+        //       totalPrice: { $sum: '$eachPriceProductType' },
+        //       numCondGood: {
+        //         $sum: '$conditionGoodProductType',
+        //       },
+        //       numCondBad: {
+        //         $sum: '$conditionBadProductType',
+        //       },
+        //     },
+        //   },
+        // ],
       },
     },
     {
       $project: {
         products: { $arrayElemAt: ['$products', 0] },
-        productTypes: { $arrayElemAt: ['$productTypes', 0] },
+        // productTypes: { $arrayElemAt: ['$productTypes', 0] },
       },
     },
   ];
 
   const productReports = await Product.aggregate(pipeline);
-  const productTypeReports = await ProductType.aggregate(pipeline);
+  // const productTypeReports = await ProductType.aggregate(pipeline);
 
   // send response
   res.status(200).json({
     status: 0,
     msg: 'Retrieved data product report successfully',
-    data: [productReports, productTypeReports],
+    data: productReports,
   });
 
   return {
     products: productReports[0].products,
-    productTypes: productTypeReports[0].productTypes,
+    // productTypes: productTypeReports[0].productTypes,
   };
 });
