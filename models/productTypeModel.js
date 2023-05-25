@@ -1,7 +1,7 @@
 /* eslint-disable no-else-return */
 const mongoose = require('mongoose');
 
-const productTypeSchema = mongoose.Schema(
+const productTypeSchema = new mongoose.Schema(
   {
     productTypeId: { type: String, unique: true },
     type: {
@@ -9,8 +9,12 @@ const productTypeSchema = mongoose.Schema(
       required: [true, 'Please enter the type of the product!'],
       unique: true,
     },
-    vendorProduct: {
+    vendorId: {
       type: mongoose.Schema.Types.ObjectId,
+      required: [true, 'This vendor id is belong to the product type'],
+    },
+    vendorProduct: {
+      type: mongoose.Schema.Types.String,
       ref: 'VendorProduct',
       required: [true, 'Please select the vendor!'],
     },
