@@ -9,11 +9,11 @@ const productTypeSchema = new mongoose.Schema(
       required: [true, 'Please enter the type of the product!'],
       unique: true,
     },
-    vendorId: {
+    vendor: {
       type: mongoose.Schema.Types.ObjectId,
-      required: [true, 'This vendor id is belong to the product type'],
+      ref: 'VendorProduct',
     },
-    vendorProduct: {
+    vendorName: {
       type: mongoose.Schema.Types.String,
       ref: 'VendorProduct',
       required: [true, 'Please select the vendor!'],
@@ -52,13 +52,35 @@ productTypeSchema.virtual('productTypeCondition').get(function () {
   }
 });
 
+// pre hook
+productTypeSchema.pre('save', async function (next) {
+  const productType = this;
+
+  if (!productType.isNew) {
+    return next(); // Only generate productTypeId for new product types
+  }
+
+  try {
+    const count = await mongoose.models.ProductType.countDocuments();
+
+    productType.productTypeId = (count + 1).toString().padStart(2, '0'); // Generate productTypeId with leading zeros
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 productTypeSchema.pre(/^find/, function (next) {
   this.start = Date.now();
   next();
 });
 
 productTypeSchema.pre(/^find/, function (next) {
-  this.populate([{ path: 'vendorProduct', select: 'vendorName' }]);
+  this.populate('vendor').populate({
+    path: 'vendor',
+    select: 'vendorName vendorSlug',
+  });
 
   next();
 });

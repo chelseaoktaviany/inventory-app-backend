@@ -1,22 +1,35 @@
 /* eslint-disable no-else-return */
 const mongoose = require('mongoose');
 
-const productSchema = mongoose.Schema(
+const productSchema = new mongoose.Schema(
   {
     productId: { type: String, unique: true },
+    brandId: { type: String, unique: true },
     brandName: {
       type: String,
       required: [true, 'Please enter the product name!'],
+      unique: true,
     },
+    groupId: String,
     group: {
       type: String,
       enum: ['Passive', 'Active'],
       required: [true, 'Please choose the group!'],
     },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CategoryProduct',
+      required: [true, 'Category is belonging to product'],
+    },
     categoryName: {
       type: mongoose.Schema.Types.String,
       ref: 'CategoryProduct',
       required: [true, 'Fill in the category first!'],
+    },
+    subCategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'SubCategoryProduct',
+      required: [true, 'Sub category is belonging to product'],
     },
     subCategoryName: {
       type: mongoose.Schema.Types.String,
@@ -24,9 +37,19 @@ const productSchema = mongoose.Schema(
       required: [true, 'Fill in the sub-category first!'],
     },
     typeProduct: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ProductType',
+      required: [true, 'Type Product is belonging to product'],
+    },
+    typeProductName: {
       type: mongoose.Schema.Types.String,
       ref: 'ProductType',
       required: [true, 'Please enter the type of the product!'],
+    },
+    vendor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'VendorProduct',
+      required: [true, 'Vendor is belonging to product'],
     },
     vendorName: {
       type: mongoose.Schema.Types.String,
@@ -60,17 +83,53 @@ const productSchema = mongoose.Schema(
 
 // pre hook
 productSchema.pre('save', function (next) {
-  const doc = this;
-  if (doc.isNew) {
-    // code here
-    const categoryId = doc.categoryId;
-    const paddedCategoryId = categoryId.padStart(2, '0'); // Ensure two-digit category number
-    const productId = `${paddedCategoryId}-${Math.floor(
-      100000000000 + Math.random() * 900000000000
-    )}`; // Generate random four-digit number
-    doc.productId = productId;
+  const product = this;
+
+  if (product.group === 'Active') {
+    product.groupId = '1';
+  } else if (product.group === 'Passive') {
+    product.groupId = '0';
   }
+
   next();
+});
+
+productSchema.pre('save', async function (next) {
+  // code here
+  const product = this;
+
+  if (!product.isNew) {
+    return next();
+  }
+
+  try {
+    const count = await mongoose.models.Product.countDocuments();
+
+    product.productId = (count + 1).toString().padStart(3, '0');
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+productSchema.pre('save', async function (next) {
+  // code here
+  const product = this;
+
+  if (!product.isNew) {
+    return next();
+  }
+
+  try {
+    const count = await mongoose.models.Product.countDocuments();
+
+    product.brandId = (count + 1).toString().padStart(2, '0');
+
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 // define virtual property
@@ -87,19 +146,29 @@ productSchema.pre(/^find/, function (next) {
   next();
 });
 
-// productSchema.pre(/^find/, function (next) {
-//   this.populate([
-//     {
-//       path: 'category',
-//       select: 'categoryName',
-//     },
-//     { path: 'subCategory', select: 'subCategoryName' },
-//     { path: 'typeProduct', select: 'type' },
-//     { path: 'vendorProduct', select: 'vendorName' },
-//   ]);
+productSchema.pre(/^find/, function (next) {
+  this.populate('category').populate({
+    path: 'category',
+    select: 'categoryId categoryName categorySlug',
+  });
 
-//   next();
-// });
+  this.populate('subCategory').populate({
+    path: 'subCategory',
+    select: 'subCategoryId subCategoryName subCategorySlug subCategoryImage',
+  });
+
+  this.populate('typeProduct').populate({
+    path: 'typeProduct',
+    select: 'productTypeId type vendor',
+  });
+
+  this.populate('vendor').populate({
+    path: 'vendor',
+    select: 'vendorName vendorSlug',
+  });
+
+  next();
+});
 
 const Product = mongoose.model('Product', productSchema);
 

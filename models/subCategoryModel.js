@@ -22,6 +22,24 @@ const subCategorySchema = new mongoose.Schema(
 );
 
 // pre hook
+subCategorySchema.pre('save', async function (next) {
+  const subCategory = this;
+
+  if (!subCategory.isNew) {
+    return next(); // Only generate subCategoryId for new sub categories
+  }
+
+  try {
+    const count = await mongoose.models.SubCategoryProduct.countDocuments();
+
+    subCategory.subCategoryId = (count + 1).toString().padStart(2, '0'); // Generate subCategoryId with leading zeros
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 subCategorySchema.pre('save', function (next) {
   if (this.isNew || this.isModified('subCategoryName')) {
     this.subCategorySlug = generateNameSlug(this.subCategoryName);
