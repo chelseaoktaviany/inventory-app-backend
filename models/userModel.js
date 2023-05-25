@@ -36,22 +36,19 @@ const userSchema = new mongoose.Schema(
   { timestamps: true, versionKey: false }
 );
 
-userSchema.pre('save', function (next) {
-  const doc = this;
-  if (doc.isNew) {
-    // Auto-increment userId only for new documents
-    mongoose
-      .model('User', userSchema)
-      .findOne({}, { userId: 1 }, { sort: { userId: -1 } })
-      .then((err, lastUser) => {
-        if (err) {
-          return next(err);
-        }
-        doc.userId = lastUser ? lastUser.userId + 1 : 1;
-        next();
-      });
-  } else {
+userSchema.pre('save', async function (next) {
+  const user = this;
+
+  if (!user.isNew) {
+    return next(); // Only generate userId for new users
+  }
+
+  try {
+    const count = await mongoose.models.User.countDocuments();
+    user.userId = (count + 1).toString(); // Generate userId based on current user count
     next();
+  } catch (error) {
+    next(error);
   }
 });
 
