@@ -4,6 +4,9 @@ const factory = require('./handleFactory');
 // models
 const Product = require('../models/productModel');
 const ProductType = require('../models/productTypeModel');
+const CategoryProduct = require('../models/categoryModel');
+const SubCategoryProduct = require('../models/subCategoryModel');
+const VendorProduct = require('../models/vendorModel');
 
 // utils
 const catchAsync = require('../utils/catchAsync');
@@ -20,10 +23,57 @@ exports.getProduct = factory.getOne(
   'Retrieved a data product successfully'
 );
 
-exports.createProduct = factory.createOne(
-  Product,
-  'Created data product successfully'
-);
+// exports.createProduct = factory.createOne(
+//   Product,
+//   'Created data product successfully'
+// );
+
+exports.createProduct = catchAsync(async (req, res, next) => {
+  const {
+    brandName,
+    group,
+    categoryName,
+    subCategoryName,
+    typeProductName,
+    vendorName,
+    purchaseDate,
+    quantity,
+    eachPrice,
+    currentLocation,
+    conditionGood,
+    conditionBad,
+  } = req.body;
+
+  const category = await CategoryProduct.findOne({ categoryName });
+  const subCategory = await SubCategoryProduct.findOne({ subCategoryName });
+  const typeProduct = await ProductType.findOne({ type: typeProductName });
+  const vendor = await VendorProduct.findOne({ vendorName });
+
+  const product = await Product.create({
+    brandName,
+    group,
+    category: category._id,
+    categoryName,
+    subCategory: subCategory._id,
+    subCategoryName,
+    typeProduct: typeProduct._id,
+    typeProductName,
+    vendor: vendor._id,
+    vendorName,
+    purchaseDate,
+    quantity,
+    eachPrice,
+    currentLocation,
+    conditionGood,
+    conditionBad,
+  });
+
+  res.status(201).json({
+    status: 0,
+    msg: 'Created data product successfully',
+    data: product,
+  });
+});
 
 exports.updateProduct = factory.updateOne(
   Product,

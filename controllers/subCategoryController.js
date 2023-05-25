@@ -98,7 +98,7 @@ exports.createSubCategory = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 0,
     msg: 'Add sub category success',
-    data: { subCategory },
+    data: subCategory,
   });
 });
 

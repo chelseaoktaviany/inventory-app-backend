@@ -1,7 +1,9 @@
+const catchAsync = require('../utils/catchAsync');
 const factory = require('./handleFactory');
 
 // models
 const ProductType = require('../models/productTypeModel');
+const VendorProduct = require('../models/vendorModel');
 
 exports.getAllProductTypes = factory.getAll(
   ProductType,
@@ -13,10 +15,43 @@ exports.getProductType = factory.getAll(
   'Retrieved a data product type successfully'
 );
 
-exports.createProductType = factory.createOne(
-  ProductType,
-  'Add product type success'
-);
+// exports.createProductType = factory.createOne(
+//   ProductType,
+//   'Add product type success'
+// );
+
+exports.createProductType = catchAsync(async (req, res, next) => {
+  const {
+    type,
+    vendorName,
+    purchaseDateProductType,
+    quantityProductType,
+    eachPriceProductType,
+    currentLocationProductType,
+    conditionGoodProductType,
+    conditionBadProductType,
+  } = req.body;
+
+  const vendor = await VendorProduct.findOne({ vendorName });
+
+  const productType = await ProductType.create({
+    type,
+    vendor: vendor._id,
+    vendorName,
+    purchaseDateProductType,
+    quantityProductType,
+    eachPriceProductType,
+    currentLocationProductType,
+    conditionGoodProductType,
+    conditionBadProductType,
+  });
+
+  res.status(200).json({
+    status: 0,
+    msg: 'Add product type success',
+    data: productType,
+  });
+});
 
 exports.updateProductType = factory.updateOne(
   ProductType,
