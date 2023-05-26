@@ -1,6 +1,8 @@
 /* eslint-disable no-else-return */
 const mongoose = require('mongoose');
 
+const { generateNameSlug } = require('../utils/slugify');
+
 const productTypeSchema = new mongoose.Schema(
   {
     productTypeId: { type: String, unique: true },
@@ -39,6 +41,10 @@ const productTypeSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'Please enter the condition of the products'],
     },
+    productTypeSlug: {
+      type: String,
+      index: true,
+    },
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
@@ -71,6 +77,13 @@ productTypeSchema.pre('save', async function (next) {
   }
 });
 
+productTypeSchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('type')) {
+    this.productTypeSlug = generateNameSlug(this.type);
+  }
+  next();
+});
+
 productTypeSchema.pre(/^find/, function (next) {
   this.start = Date.now();
   next();
@@ -84,6 +97,8 @@ productTypeSchema.pre(/^find/, function (next) {
 
   next();
 });
+
+productTypeSchema.index({ productTypeSlug: 1 });
 
 const ProductType = mongoose.model('ProductType', productTypeSchema);
 

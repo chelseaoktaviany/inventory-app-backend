@@ -1,6 +1,8 @@
 /* eslint-disable no-else-return */
 const mongoose = require('mongoose');
 
+const { generateNameSlug } = require('../utils/slugify');
+
 const productSchema = new mongoose.Schema(
   {
     productId: { type: String, unique: true },
@@ -9,12 +11,17 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please enter the product name!'],
       unique: true,
+      sparse: true,
     },
     groupId: String,
     group: {
       type: String,
       enum: ['Passive', 'Active'],
       required: [true, 'Please choose the group!'],
+    },
+    groupSlug: {
+      type: String,
+      index: true,
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
@@ -77,6 +84,10 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'Please enter the condition of the products'],
     },
+    productSlug: {
+      type: String,
+      index: true,
+    },
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
@@ -132,6 +143,20 @@ productSchema.pre('save', async function (next) {
   }
 });
 
+productSchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('group')) {
+    this.groupSlug = generateNameSlug(this.group);
+  }
+  next();
+});
+
+productSchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('brandName')) {
+    this.productSlug = generateNameSlug(this.brandName);
+  }
+  next();
+});
+
 // define virtual property
 productSchema.virtual('productCondition').get(function () {
   if (this.conditionGood >= this.conditionBad) {
@@ -169,6 +194,8 @@ productSchema.pre(/^find/, function (next) {
 
   next();
 });
+
+productSchema.index({ productSlug: 1 });
 
 const Product = mongoose.model('Product', productSchema);
 
