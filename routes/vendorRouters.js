@@ -8,18 +8,18 @@ const authController = require('../controllers/authController');
 
 router.use(authController.protect);
 
-router.use(authController.restrictTo('Admin'));
+router.route('/').get(vendorController.getAllVendors);
 
-router
-  .route('/')
-  .get(vendorController.getAllVendors)
-  .post(vendorController.createVendor);
+router.route('/:id').get(vendorController.getVendor);
 
 router.route('/:vendorSlug').get(vendorController.getVendorByName);
 
+router.use(authController.restrictTo('Admin'));
+
+router.route('/').post(vendorController.createVendor);
+
 router
   .route('/:id')
-  .get(vendorController.getVendor)
   .patch(vendorController.updateVendor)
   .delete(vendorController.deleteVendor);
 

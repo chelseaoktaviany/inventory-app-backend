@@ -13,16 +13,23 @@ router
   .route('/prod-reports/:month/:year')
   .get(productController.getProdReports);
 
-router.use(authController.restrictTo('Admin'));
+router.route('/').get(productController.getAllProducts);
+router.route('/:id').get(productController.getProduct);
 
 router
-  .route('/')
-  .get(productController.getAllProducts)
-  .post(productController.createProduct);
+  .route('/:subCategorySlug/:productSlug')
+  .get(productController.getProductByName);
+
+router
+  .route('/:groupSlug/:categorySlug/:productSlug')
+  .get(productController.getProductByGroupAndCategory);
+
+router.use(authController.restrictTo('Admin'));
+
+router.route('/').post(productController.createProduct);
 
 router
   .route('/:id')
-  .get(productController.getProduct)
   .patch(productController.updateProduct)
   .delete(productController.deleteProduct);
 

@@ -8,16 +8,16 @@ const authController = require('../controllers/authController');
 
 router.use(authController.protect);
 
+router.route('/').get(productTypeController.getAllProductTypes);
+
+router.route('/:id').get(productTypeController.getProductType);
+
 router.use(authController.restrictTo('Admin'));
 
-router
-  .route('/')
-  .get(productTypeController.getAllProductTypes)
-  .post(productTypeController.createProductType);
+router.route('/').post(productTypeController.createProductType);
 
 router
   .route('/:id')
-  .get(productTypeController.getProductType)
   .patch(productTypeController.updateProductType)
   .delete(productTypeController.deleteProductType);
 
