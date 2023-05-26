@@ -1,4 +1,6 @@
 /* eslint-disable radix */
+const slugify = require('slugify');
+
 const factory = require('./handleFactory');
 
 // models
@@ -172,4 +174,49 @@ exports.getProdReports = catchAsync(async (req, res, next) => {
     products: productReports[0].products,
     // productTypes: productTypeReports[0].productTypes,
   };
+});
+
+exports.getProductByGroupAndCategory = catchAsync(async (req, res, next) => {
+  const { groupSlug, categorySlug, productSlug } = req.params;
+
+  const category = await CategoryProduct.findOne({ categorySlug });
+
+  const product = await Product.find({
+    groupSlug: groupSlug,
+    category: category._id,
+    productSlug: productSlug,
+  });
+
+  if (!product) {
+    return next(new AppError('Product not found', 404));
+  }
+
+  return res.status(200).json({
+    status: 0,
+    result: product.length,
+    msg: 'Retrieved data product successfully',
+    data: product,
+  });
+});
+
+exports.getProductByName = catchAsync(async (req, res, next) => {
+  const { subCategorySlug, productSlug } = req.params;
+
+  const subCategory = await SubCategoryProduct.findOne({ subCategorySlug });
+
+  const product = await Product.find({
+    subCategory: subCategory._id,
+    productSlug: productSlug,
+  });
+
+  if (!product) {
+    return next(new AppError('Product not found', 404));
+  }
+
+  return res.status(200).json({
+    status: 0,
+    result: product.length,
+    msg: 'Retrieved data product successfully',
+    data: product,
+  });
 });
