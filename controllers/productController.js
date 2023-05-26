@@ -1,6 +1,4 @@
 /* eslint-disable radix */
-const slugify = require('slugify');
-
 const factory = require('./handleFactory');
 
 // models
