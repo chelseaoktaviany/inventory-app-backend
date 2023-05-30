@@ -61,7 +61,7 @@ exports.getAllSubCategories = factory.getAll(
 
 exports.getSubCategory = factory.getOne(
   SubCategoryProduct,
-  { path: 'category' },
+  { path: '_id' },
   'Retrieved data sub category successfully'
 );
 

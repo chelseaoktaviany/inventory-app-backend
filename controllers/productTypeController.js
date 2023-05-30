@@ -10,8 +10,9 @@ exports.getAllProductTypes = factory.getAll(
   'Retrieved data product types successfully'
 );
 
-exports.getProductType = factory.getAll(
+exports.getProductType = factory.getOne(
   ProductType,
+  { path: '_id' },
   'Retrieved a data product type successfully'
 );
 

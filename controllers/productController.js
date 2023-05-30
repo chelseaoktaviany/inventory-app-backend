@@ -191,8 +191,8 @@ exports.getProductByGroupAndCategory = catchAsync(async (req, res, next) => {
 
   return res.status(200).json({
     status: 0,
-    result: product.length,
     msg: 'Retrieved data product successfully',
+    result: product.length,
     data: product,
   });
 });
@@ -213,8 +213,8 @@ exports.getProductByName = catchAsync(async (req, res, next) => {
 
   return res.status(200).json({
     status: 0,
-    result: product.length,
     msg: 'Retrieved data product successfully',
+    result: product.length,
     data: product,
   });
 });
