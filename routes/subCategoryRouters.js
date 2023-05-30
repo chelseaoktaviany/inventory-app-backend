@@ -12,9 +12,9 @@ router.route('/').get(subCategoryController.getAllSubCategories);
 
 router.route('/:id').get(subCategoryController.getSubCategory);
 
-router
-  .route('/:subCategorySlug')
-  .get(subCategoryController.getSubCategoryByName);
+// router
+//   .route('/:subCategorySlug')
+//   .get(subCategoryController.getSubCategoryByName);
 
 router.use(authController.restrictTo('Admin'));
 
