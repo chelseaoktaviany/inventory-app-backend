@@ -9,7 +9,6 @@ const productTypeSchema = new mongoose.Schema(
     type: {
       type: String,
       required: [true, 'Please enter the type of the product!'],
-      unique: true,
     },
     vendor: {
       type: mongoose.Schema.Types.ObjectId,
