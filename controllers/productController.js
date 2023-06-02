@@ -19,7 +19,7 @@ exports.getAllProducts = factory.getAll(
 
 exports.getProduct = factory.getOne(
   Product,
-  { path: 'group' },
+  { path: '_id' },
   'Retrieved a data product successfully'
 );
 
@@ -205,6 +205,27 @@ exports.getProductByName = catchAsync(async (req, res, next) => {
   const product = await Product.find({
     subCategory: subCategory._id,
     productSlug: productSlug,
+  });
+
+  if (!product) {
+    return next(new AppError('Product not found', 404));
+  }
+
+  return res.status(200).json({
+    status: 0,
+    msg: 'Retrieved data product successfully',
+    result: product.length,
+    data: product,
+  });
+});
+
+exports.getProductByVendor = catchAsync(async (req, res, next) => {
+  const { vendorSlug } = req.params;
+
+  const vendor = await VendorProduct.findOne({ vendorSlug });
+
+  const product = await Product.find({
+    vendor: vendor._id,
   });
 
   if (!product) {

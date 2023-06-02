@@ -13,7 +13,15 @@ router
   .route('/prod-reports/:month/:year')
   .get(productController.getProdReports);
 
-router.route('/').get(productController.getAllProducts);
+router.use(authController.restrictTo('Admin'));
+
+router.route('/:vendorSlug').get(productController.getProductByVendor);
+
+router
+  .route('/')
+  .get(productController.getAllProducts)
+  .post(productController.createProduct);
+
 router.route('/:id').get(productController.getProduct);
 
 router
@@ -23,10 +31,6 @@ router
 router
   .route('/:groupSlug/:categorySlug/:productSlug')
   .get(productController.getProductByGroupAndCategory);
-
-router.use(authController.restrictTo('Admin'));
-
-router.route('/').post(productController.createProduct);
 
 router
   .route('/:id')

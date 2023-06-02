@@ -12,8 +12,6 @@ router.route('/').get(categoryController.getAllCategories);
 
 router.route('/:id').get(categoryController.getCategory);
 
-// router.route('/:categorySlug').get(categoryController.getCategoryByName);
-
 router.use(authController.restrictTo('Admin'));
 
 router.route('/').post(categoryController.createCategory);
