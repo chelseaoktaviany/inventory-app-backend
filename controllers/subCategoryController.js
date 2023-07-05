@@ -1,6 +1,5 @@
 // dependencies
 const multer = require('multer');
-const sharp = require('sharp');
 
 const path = require('path');
 
@@ -82,17 +81,12 @@ exports.getSubCategoryByName = catchAsync(async (req, res, next) => {
 exports.createSubCategory = catchAsync(async (req, res, next) => {
   const filteredBody = filterObj(req.body, 'category', 'subCategoryName');
 
-  const file = req.file.path.replace(/\\/g, '/');
-  const outputPath = path
-    .join('uploads', 'sub-categories', `resized-${req.file.filename}`)
-    .replace(/\\/g, '/');
-
-  sharp(file).resize({ width: 500, height: 500 }).toFile(outputPath);
+  const url = `${req.protocol}://${req.get('host')}/v1/im`;
 
   const subCategory = await SubCategoryProduct.create({
     category: filteredBody.category,
     subCategoryName: filteredBody.subCategoryName,
-    subCategoryImage: outputPath,
+    subCategoryImage: `${url}/uploads/sub-categories/${req.file.filename}`,
   });
 
   res.status(201).json({
