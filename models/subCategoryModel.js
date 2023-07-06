@@ -6,6 +6,11 @@ const subCategorySchema = new mongoose.Schema(
   {
     subCategoryId: { type: String, unique: true },
     category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CategoryProduct',
+      required: [true, 'Category is belonging to product'],
+    },
+    categoryName: {
       type: mongoose.Schema.Types.String,
       ref: 'CategoryProduct',
       required: [true, 'Fill in the category first!'],
@@ -44,6 +49,15 @@ subCategorySchema.pre('save', function (next) {
   if (this.isNew || this.isModified('subCategoryName')) {
     this.subCategorySlug = generateNameSlug(this.subCategoryName);
   }
+  next();
+});
+
+subCategorySchema.pre(/^find/, function (next) {
+  this.populate('category').populate({
+    path: 'category',
+    select: 'categoryId categoryName categorySlug',
+  });
+
   next();
 });
 
