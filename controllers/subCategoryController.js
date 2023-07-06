@@ -7,6 +7,7 @@ const path = require('path');
 const factory = require('./handleFactory');
 
 // models
+const CategoryProduct = require('../models/categoryModel');
 const SubCategoryProduct = require('../models/subCategoryModel');
 
 // utils
@@ -79,12 +80,21 @@ exports.getSubCategoryByName = catchAsync(async (req, res, next) => {
 });
 
 exports.createSubCategory = catchAsync(async (req, res, next) => {
-  const filteredBody = filterObj(req.body, 'category', 'subCategoryName');
+  const filteredBody = filterObj(req.body, 'categoryName', 'subCategoryName');
 
   const url = `${req.protocol}://${req.get('host')}/v1/im`;
 
+  const category = await CategoryProduct.findOne({
+    categoryName: filteredBody.categoryName,
+  });
+
+  if (!category) {
+    return next(new AppError('No category found', 404));
+  }
+
   const subCategory = await SubCategoryProduct.create({
-    category: filteredBody.category,
+    category: category._id,
+    categoryName: filteredBody.categoryName,
     subCategoryName: filteredBody.subCategoryName,
     subCategoryImage: `${url}/uploads/sub-categories/${req.file.filename}`,
   });
