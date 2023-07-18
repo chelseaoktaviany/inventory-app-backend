@@ -33,6 +33,11 @@ const productSchema = new mongoose.Schema(
       ref: 'CategoryProduct',
       required: [true, 'Fill in the category first!'],
     },
+    categorySlug: {
+      type: mongoose.Schema.Types.String,
+      ref: 'CategoryProduct',
+      required: [true, 'Category slug must be in category!'],
+    },
     subCategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'SubCategoryProduct',
@@ -42,6 +47,11 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.String,
       ref: 'SubCategoryProduct',
       required: [true, 'Fill in the sub-category first!'],
+    },
+    subCategorySlug: {
+      type: mongoose.Schema.Types.String,
+      ref: 'SubCategoryProduct',
+      required: [true, 'Sub category slug must be in sub category!'],
     },
     typeProduct: {
       type: mongoose.Schema.Types.ObjectId,
@@ -62,6 +72,11 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.String,
       ref: 'VendorProduct',
       required: [true, 'Please select the vendor!'],
+    },
+    vendorSlug: {
+      type: mongoose.Schema.Types.String,
+      ref: 'VendorProduct',
+      required: [true, 'Vendor slug must be in vendor!'],
     },
     purchaseDate: Date,
     quantity: {
@@ -146,6 +161,20 @@ productSchema.pre('save', async function (next) {
 productSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('group')) {
     this.groupSlug = generateNameSlug(this.group);
+  }
+  next();
+});
+
+productSchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('categoryName')) {
+    this.categorySlug = generateNameSlug(this.categoryName);
+  }
+  next();
+});
+
+productSchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('subCategoryName')) {
+    this.subCategorySlug = generateNameSlug(this.subCategoryName);
   }
   next();
 });

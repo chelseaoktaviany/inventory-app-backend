@@ -15,6 +15,11 @@ const subCategorySchema = new mongoose.Schema(
       ref: 'CategoryProduct',
       required: [true, 'Fill in the category first!'],
     },
+    categorySlug: {
+      type: mongoose.Schema.Types.String,
+      ref: 'CategoryProduct',
+      required: [true, 'Category slug is required'],
+    },
     subCategoryName: {
       type: String,
       required: [true, 'Please fill the sub-category name!'],
@@ -46,9 +51,14 @@ subCategorySchema.pre('save', async function (next) {
 });
 
 subCategorySchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('categoryName')) {
+    this.categorySlug = generateNameSlug(this.categoryName);
+  }
+
   if (this.isNew || this.isModified('subCategoryName')) {
     this.subCategorySlug = generateNameSlug(this.subCategoryName);
   }
+
   next();
 });
 
@@ -61,17 +71,8 @@ subCategorySchema.pre(/^find/, function (next) {
   next();
 });
 
-// subCategorySchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: 'category',
-//     select: 'categoryName categorySlug',
-//   });
-
-//   next();
-// });
-
 // indexing
-subCategorySchema.index({ subCategorySlug: 1 });
+subCategorySchema.index({ subCategorySlug: 1, categorySlug: 1 });
 
 const SubCategoryProduct = mongoose.model(
   'SubCategoryProduct',
