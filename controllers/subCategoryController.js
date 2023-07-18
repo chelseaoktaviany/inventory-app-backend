@@ -65,20 +65,6 @@ exports.getSubCategory = factory.getOne(
   'Retrieved data sub category successfully'
 );
 
-exports.getSubCategoryByName = catchAsync(async (req, res, next) => {
-  const subCategory = await SubCategoryProduct.findOne({
-    subCategorySlug: req.params.subCategorySlug,
-  });
-  if (!subCategory) {
-    return next(new AppError('Sub category not found', 404));
-  }
-  return res.status(200).json({
-    status: 0,
-    msg: 'Retrieved data sub category successfully',
-    data: subCategory,
-  });
-});
-
 exports.createSubCategory = catchAsync(async (req, res, next) => {
   const filteredBody = filterObj(req.body, 'categoryName', 'subCategoryName');
 
@@ -95,6 +81,7 @@ exports.createSubCategory = catchAsync(async (req, res, next) => {
   const subCategory = await SubCategoryProduct.create({
     category: category._id,
     categoryName: filteredBody.categoryName,
+    categorySlug: category.categorySlug,
     subCategoryName: filteredBody.subCategoryName,
     subCategoryImage: `${url}/uploads/sub-categories/${req.file.filename}`,
   });
@@ -105,11 +92,6 @@ exports.createSubCategory = catchAsync(async (req, res, next) => {
     data: subCategory,
   });
 });
-
-// exports.createSubCategory = factory.createOne(
-//   SubCategoryProduct,
-//   'Add sub category success'
-// );
 
 exports.updateSubCategory = factory.updateOne(
   SubCategoryProduct,
