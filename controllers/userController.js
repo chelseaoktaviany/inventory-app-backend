@@ -1,4 +1,5 @@
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 const factory = require('./handleFactory');
 
 // using model
@@ -18,6 +19,30 @@ exports.getUser = factory.getOne(
   'Retrieved data successfully'
 );
 
-exports.editUser = factory.updateOne(User, 'Account updated');
+// exports.editUser = factory.updateOne(User, 'Account updated');
+
+exports.editUser = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
+  const role = req.body.role;
+
+  const user = await User.findByIdAndUpdate(
+    { _id: id },
+    { role: role },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!user) {
+    return next(new AppError('No user found', 404));
+  }
+
+  res.status(200).json({
+    status: 0,
+    msg: 'User updated successfully',
+    data: user,
+  });
+});
 
 exports.deleteUser = factory.deleteOne(User, 'Deleted user success');
