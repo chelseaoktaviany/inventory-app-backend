@@ -6,6 +6,7 @@ const catchAsync = require('../utils/catchAsync');
 
 // models
 const CategoryProduct = require('../models/categoryModel');
+const GroupProduct = require('../models/groupModel');
 
 exports.getAllCategories = factory.getAll(
   CategoryProduct,
@@ -18,22 +19,11 @@ exports.getCategory = factory.getOne(
   'Retrieved data category successfully'
 );
 
-exports.getCategoryByName = catchAsync(async (req, res, next) => {
-  const category = await CategoryProduct.findOne({
-    categorySlug: req.params.categorySlug,
-  });
-  if (!category) {
-    return next(new AppError('Category not found', 404));
-  }
-  return res.status(200).json({
-    status: 0,
-    msg: 'Retrieved data category successfully',
-    data: category,
-  });
-});
-
-exports.createCategory = catchAsync(async (req, res, next) => {
+exports.createCategoryActive = catchAsync(async (req, res, next) => {
   const { categoryName } = req.body;
+  const groupName = 'Active';
+
+  const group = await GroupProduct.findOne({ groupName });
 
   const category = await CategoryProduct.findOne({ categoryName });
 
@@ -42,7 +32,39 @@ exports.createCategory = catchAsync(async (req, res, next) => {
     return next(new AppError('Category Already Exist', 409));
   }
 
-  const newCategory = await CategoryProduct.create({ categoryName });
+  const newCategory = await CategoryProduct.create({
+    categoryName,
+    group: group._id,
+    groupName: group.groupName,
+    groupSlug: group.groupSlug,
+  });
+
+  res.status(201).json({
+    status: 0,
+    msg: 'Add category success',
+    data: newCategory,
+  });
+});
+
+exports.createCategoryPassive = catchAsync(async (req, res, next) => {
+  const { categoryName } = req.body;
+  const groupName = 'Passive';
+
+  const group = await GroupProduct.findOne({ groupName });
+
+  const category = await CategoryProduct.findOne({ categoryName });
+
+  // memeriksa jika kategori sudah ada
+  if (category) {
+    return next(new AppError('Category Already Exist', 409));
+  }
+
+  const newCategory = await CategoryProduct.create({
+    categoryName,
+    group: group._id,
+    groupName: group.groupName,
+    groupSlug: group.groupSlug,
+  });
 
   res.status(201).json({
     status: 0,
