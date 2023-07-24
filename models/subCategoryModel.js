@@ -5,6 +5,21 @@ const { generateNameSlug } = require('../utils/slugify');
 const subCategorySchema = new mongoose.Schema(
   {
     subCategoryId: { type: String, unique: true },
+    group: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'GroupProduct',
+      required: [true, 'Group belongs to category'],
+    },
+    groupName: {
+      type: mongoose.Schema.Types.String,
+      ref: 'GroupProduct',
+      required: [true, 'Group name is belong to category'],
+    },
+    groupSlug: {
+      type: mongoose.Schema.Types.String,
+      ref: 'GroupProduct',
+      required: [true, 'Group slug is belong to category'],
+    },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'CategoryProduct',
@@ -51,6 +66,10 @@ subCategorySchema.pre('save', async function (next) {
 });
 
 subCategorySchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('groupName')) {
+    this.groupSlug = generateNameSlug(this.groupName);
+  }
+
   if (this.isNew || this.isModified('categoryName')) {
     this.categorySlug = generateNameSlug(this.categoryName);
   }
@@ -68,11 +87,16 @@ subCategorySchema.pre(/^find/, function (next) {
     select: 'categoryId categoryName categorySlug',
   });
 
+  this.populate('group').populate({
+    path: 'group',
+    select: 'groupId groupName groupSlug',
+  });
+
   next();
 });
 
 // indexing
-subCategorySchema.index({ subCategorySlug: 1, categorySlug: 1 });
+subCategorySchema.index({ subCategorySlug: 1 });
 
 const SubCategoryProduct = mongoose.model(
   'SubCategoryProduct',
