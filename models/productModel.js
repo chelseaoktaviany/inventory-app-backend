@@ -13,15 +13,20 @@ const productSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
-    groupId: String,
     group: {
-      type: String,
-      enum: ['Passive', 'Active'],
-      required: [true, 'Please choose the group!'],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'GroupProduct',
+      required: [true, 'Group is belonging to product'],
+    },
+    groupName: {
+      type: mongoose.Schema.Types.String,
+      ref: 'GroupProduct',
+      required: [true, 'Fill in the group first!'],
     },
     groupSlug: {
-      type: String,
-      index: true,
+      type: mongoose.Schema.Types.String,
+      ref: 'GroupProduct',
+      required: [true, 'Group slug is belong to category'],
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
@@ -108,18 +113,6 @@ const productSchema = new mongoose.Schema(
 );
 
 // pre hook
-productSchema.pre('save', function (next) {
-  const product = this;
-
-  if (product.group === 'Active') {
-    product.groupId = '1';
-  } else if (product.group === 'Passive') {
-    product.groupId = '0';
-  }
-
-  next();
-});
-
 productSchema.pre('save', async function (next) {
   // code here
   const product = this;
@@ -159,27 +152,18 @@ productSchema.pre('save', async function (next) {
 });
 
 productSchema.pre('save', function (next) {
-  if (this.isNew || this.isModified('group')) {
-    this.groupSlug = generateNameSlug(this.group);
+  if (this.isNew || this.isModified('groupName')) {
+    this.groupSlug = generateNameSlug(this.groupName);
   }
-  next();
-});
 
-productSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('categoryName')) {
     this.categorySlug = generateNameSlug(this.categoryName);
   }
-  next();
-});
 
-productSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('subCategoryName')) {
     this.subCategorySlug = generateNameSlug(this.subCategoryName);
   }
-  next();
-});
 
-productSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('brandName')) {
     this.productSlug = generateNameSlug(this.brandName);
   }
@@ -201,6 +185,11 @@ productSchema.pre(/^find/, function (next) {
 });
 
 productSchema.pre(/^find/, function (next) {
+  this.populate('group').populate({
+    path: 'group',
+    select: 'groupId groupName groupSlug',
+  });
+
   this.populate('category').populate({
     path: 'category',
     select: 'categoryId categoryName categorySlug',
