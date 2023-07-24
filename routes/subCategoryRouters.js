@@ -15,10 +15,17 @@ router.route('/:id').get(subCategoryController.getSubCategory);
 router.use(authController.restrictTo('Admin'));
 
 router
-  .route('/')
+  .route('/active/')
   .post(
     subCategoryController.uploadSubCategImage,
-    subCategoryController.createSubCategory
+    subCategoryController.createSubCategoryActive
+  );
+
+router
+  .route('/passive/')
+  .post(
+    subCategoryController.uploadSubCategImage,
+    subCategoryController.createSubCategoryPassive
   );
 
 router
