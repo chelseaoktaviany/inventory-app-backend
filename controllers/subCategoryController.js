@@ -7,6 +7,7 @@ const path = require('path');
 const factory = require('./handleFactory');
 
 // models
+const GroupProduct = require('../models/groupModel');
 const CategoryProduct = require('../models/categoryModel');
 const SubCategoryProduct = require('../models/subCategoryModel');
 
@@ -65,10 +66,14 @@ exports.getSubCategory = factory.getOne(
   'Retrieved data sub category successfully'
 );
 
-exports.createSubCategory = catchAsync(async (req, res, next) => {
+exports.createSubCategoryActive = catchAsync(async (req, res, next) => {
   const filteredBody = filterObj(req.body, 'categoryName', 'subCategoryName');
 
+  const groupName = 'Active';
+
   const url = `${req.protocol}://${req.get('host')}/v1/im`;
+
+  const group = await GroupProduct.findOne({ groupName });
 
   const category = await CategoryProduct.findOne({
     categoryName: filteredBody.categoryName,
@@ -79,6 +84,44 @@ exports.createSubCategory = catchAsync(async (req, res, next) => {
   }
 
   const subCategory = await SubCategoryProduct.create({
+    group: group._id,
+    groupName: group.groupName,
+    groupSlug: group.groupSlug,
+    category: category._id,
+    categoryName: filteredBody.categoryName,
+    categorySlug: category.categorySlug,
+    subCategoryName: filteredBody.subCategoryName,
+    subCategoryImage: `${url}/uploads/sub-categories/${req.file.filename}`,
+  });
+
+  res.status(201).json({
+    status: 0,
+    msg: 'Add sub category success',
+    data: subCategory,
+  });
+});
+
+exports.createSubCategoryPassive = catchAsync(async (req, res, next) => {
+  const filteredBody = filterObj(req.body, 'categoryName', 'subCategoryName');
+
+  const groupName = 'Passive';
+
+  const url = `${req.protocol}://${req.get('host')}/v1/im`;
+
+  const group = await GroupProduct.findOne({ groupName });
+
+  const category = await CategoryProduct.findOne({
+    categoryName: filteredBody.categoryName,
+  });
+
+  if (!category) {
+    return next(new AppError('No category found', 404));
+  }
+
+  const subCategory = await SubCategoryProduct.create({
+    group: group._id,
+    groupName: group.groupName,
+    groupSlug: group.groupSlug,
     category: category._id,
     categoryName: filteredBody.categoryName,
     categorySlug: category.categorySlug,
