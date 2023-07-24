@@ -21,6 +21,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const userRouters = require('./routes/userRouters');
 const productRouters = require('./routes/productRouters');
 const productTypeRouters = require('./routes/productTypeRouters');
+const groupRouters = require('./routes/groupRouters');
 const categoryRouters = require('./routes/categoryRouters');
 const subCategoryRouters = require('./routes/subCategoryRouters');
 const vendorRouters = require('./routes/vendorRouters');
@@ -156,6 +157,7 @@ app.use((req, res, next) => {
 app.use('/v1/im/users', userRouters);
 app.use('/v1/im/products', productRouters);
 app.use('/v1/im/productTypes', productTypeRouters);
+app.use('/v1/im/groups', groupRouters);
 app.use('/v1/im/categories', categoryRouters);
 app.use('/v1/im/subCategories', subCategoryRouters);
 app.use('/v1/im/vendors', vendorRouters);
