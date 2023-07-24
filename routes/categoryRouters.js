@@ -14,7 +14,8 @@ router.route('/:id').get(categoryController.getCategory);
 
 router.use(authController.restrictTo('Admin'));
 
-router.route('/').post(categoryController.createCategory);
+router.route('/active/').post(categoryController.createCategoryActive);
+router.route('/passive/').post(categoryController.createCategoryPassive);
 
 router
   .route('/:id')
