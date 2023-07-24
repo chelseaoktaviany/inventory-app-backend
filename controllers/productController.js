@@ -11,6 +11,7 @@ const VendorProduct = require('../models/vendorModel');
 // utils
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const GroupProduct = require('../models/groupModel');
 
 exports.getAllProducts = factory.getAll(
   Product,
@@ -31,7 +32,7 @@ exports.getProduct = factory.getOne(
 exports.createProduct = catchAsync(async (req, res, next) => {
   const {
     brandName,
-    group,
+    groupName,
     categoryName,
     subCategoryName,
     typeProductName,
@@ -44,6 +45,7 @@ exports.createProduct = catchAsync(async (req, res, next) => {
     conditionBad,
   } = req.body;
 
+  const group = await GroupProduct.findOne({ groupName });
   const category = await CategoryProduct.findOne({ categoryName });
   const subCategory = await SubCategoryProduct.findOne({ subCategoryName });
   const typeProduct = await ProductType.findOne({ type: typeProductName });
@@ -51,7 +53,9 @@ exports.createProduct = catchAsync(async (req, res, next) => {
 
   const product = await Product.create({
     brandName,
-    group,
+    group: group._id,
+    groupName: group.groupName,
+    groupSlug: group.groupSlug,
     category: category._id,
     categoryName,
     categorySlug: category.categorySlug,
