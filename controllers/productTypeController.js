@@ -16,11 +16,6 @@ exports.getProductType = factory.getOne(
   'Retrieved a data product type successfully'
 );
 
-// exports.createProductType = factory.createOne(
-//   ProductType,
-//   'Add product type success'
-// );
-
 exports.createProductType = catchAsync(async (req, res, next) => {
   const {
     type,
@@ -39,6 +34,7 @@ exports.createProductType = catchAsync(async (req, res, next) => {
     type,
     vendor: vendor._id,
     vendorName,
+    vendorSlug: vendor.vendorSlug,
     purchaseDateProductType,
     quantityProductType,
     eachPriceProductType,
