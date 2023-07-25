@@ -24,11 +24,6 @@ exports.getProduct = factory.getOne(
   'Retrieved a data product successfully'
 );
 
-// exports.createProduct = factory.createOne(
-//   Product,
-//   'Created data product successfully'
-// );
-
 exports.createProduct = catchAsync(async (req, res, next) => {
   const {
     brandName,
@@ -54,7 +49,7 @@ exports.createProduct = catchAsync(async (req, res, next) => {
   const product = await Product.create({
     brandName,
     group: group._id,
-    groupName: group.groupName,
+    groupName,
     groupSlug: group.groupSlug,
     category: category._id,
     categoryName,
@@ -65,8 +60,8 @@ exports.createProduct = catchAsync(async (req, res, next) => {
     typeProduct: typeProduct._id,
     typeProductName,
     vendor: vendor._id,
-    vendorSlug: vendor.vendorSlug,
     vendorName,
+    vendorSlug: vendor.vendorSlug,
     purchaseDate,
     quantity,
     eachPrice,
