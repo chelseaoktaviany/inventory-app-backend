@@ -15,22 +15,12 @@ router
 
 router.use(authController.restrictTo('Admin'));
 
-router.route('/:vendorSlug').get(productController.getProductByVendor);
-
 router
   .route('/')
   .get(productController.getAllProducts)
   .post(productController.createProduct);
 
 router.route('/:id').get(productController.getProduct);
-
-router
-  .route('/:subCategorySlug/:productSlug')
-  .get(productController.getProductByName);
-
-router
-  .route('/:groupSlug/:categorySlug/:productSlug')
-  .get(productController.getProductByGroupAndCategory);
 
 router
   .route('/:id')
