@@ -19,6 +19,11 @@ const productTypeSchema = new mongoose.Schema(
       ref: 'VendorProduct',
       required: [true, 'Please select the vendor!'],
     },
+    vendorSlug: {
+      type: mongoose.Schema.Types.String,
+      ref: 'VendorProduct',
+      required: [true, 'Vendor slug must be in vendor!'],
+    },
     purchaseDateProductType: Date,
     quantityProductType: {
       type: Number,
