@@ -59,9 +59,8 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Sub category slug must be in sub category!'],
     },
     typeProduct: {
-      // type: mongoose.Schema.Types.ObjectId,
-      // ref: 'ProductType',
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ProductType',
       required: [true, 'Type Product is belonging to product'],
     },
     typeProductName: {
