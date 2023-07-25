@@ -59,8 +59,9 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Sub category slug must be in sub category!'],
     },
     typeProduct: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'ProductType',
+      // type: mongoose.Schema.Types.ObjectId,
+      // ref: 'ProductType',
+      type: String,
       required: [true, 'Type Product is belonging to product'],
     },
     typeProductName: {
@@ -166,6 +167,10 @@ productSchema.pre('save', function (next) {
 
   if (this.isNew || this.isModified('brandName')) {
     this.productSlug = generateNameSlug(this.brandName);
+  }
+
+  if (this.isNew || this.isModified('vendorName')) {
+    this.vendorSlug = generateNameSlug(this.vendorName);
   }
   next();
 });
