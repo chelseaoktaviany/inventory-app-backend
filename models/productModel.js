@@ -206,7 +206,8 @@ productSchema.pre(/^find/, function (next) {
 
   this.populate('typeProduct').populate({
     path: 'typeProduct',
-    select: 'productTypeId type vendor',
+    select:
+      'productTypeId type vendor eachPriceProductType currentLocationProductType',
   });
 
   this.populate('vendor').populate({
