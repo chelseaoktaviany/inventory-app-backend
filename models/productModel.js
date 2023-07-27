@@ -10,8 +10,6 @@ const productSchema = new mongoose.Schema(
     brandName: {
       type: String,
       required: [true, 'Please enter the product name!'],
-      unique: true,
-      sparse: true,
     },
     group: {
       type: mongoose.Schema.Types.ObjectId,
