@@ -8,11 +8,6 @@ const authController = require('../controllers/authController');
 
 router.use(authController.protect);
 
-// get reports
-router
-  .route('/prod-reports/:month/:year')
-  .get(productController.getProdReports);
-
 router.use(authController.restrictTo('User', 'Admin'));
 
 router
