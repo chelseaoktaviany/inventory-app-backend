@@ -181,6 +181,10 @@ productSchema.virtual('productCondition').get(function () {
   }
 });
 
+productSchema.virtual('combinedId').get(function () {
+  return `${this.group.groupId}${this.category.categoryId}${this.subCategory.subCategoryId}${this.typeProduct.productTypeId}${this.productId}`;
+});
+
 productSchema.pre(/^find/, function (next) {
   this.start = Date.now();
   next();
