@@ -16,6 +16,10 @@ const productSchema = new mongoose.Schema(
       ref: 'GroupProduct',
       required: [true, 'Group is belonging to product'],
     },
+    groupId: {
+      type: mongoose.Schema.Types.String,
+      ref: 'GroupProduct',
+    },
     groupName: {
       type: mongoose.Schema.Types.String,
       ref: 'GroupProduct',
@@ -30,6 +34,10 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'CategoryProduct',
       required: [true, 'Category is belonging to product'],
+    },
+    categoryId: {
+      type: mongoose.Schema.Types.String,
+      ref: 'CategoryProduct',
     },
     categoryName: {
       type: mongoose.Schema.Types.String,
@@ -46,6 +54,10 @@ const productSchema = new mongoose.Schema(
       ref: 'SubCategoryProduct',
       required: [true, 'Sub category is belonging to product'],
     },
+    subCategoryId: {
+      type: mongoose.Schema.Types.String,
+      ref: 'SubCategoryProduct',
+    },
     subCategoryName: {
       type: mongoose.Schema.Types.String,
       ref: 'SubCategoryProduct',
@@ -60,6 +72,10 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'ProductType',
       required: [true, 'Type Product is belonging to product'],
+    },
+    typeProductId: {
+      type: mongoose.Schema.Types.String,
+      ref: 'ProductType',
     },
     typeProductName: {
       type: mongoose.Schema.Types.String,
@@ -182,7 +198,7 @@ productSchema.virtual('productCondition').get(function () {
 });
 
 productSchema.virtual('combinedId').get(function () {
-  return `${this.group.groupId}${this.category.categoryId}${this.subCategory.subCategoryId}${this.typeProduct.productTypeId}${this.productId}`;
+  return `${this.groupId}${this.categoryId}${this.subCategoryId}${this.typeProductId}${this.productId}`;
 });
 
 productSchema.pre(/^find/, function (next) {
@@ -209,7 +225,7 @@ productSchema.pre(/^find/, function (next) {
   this.populate('typeProduct').populate({
     path: 'typeProduct',
     select:
-      'productTypeId type vendor eachPriceProductType currentLocationProductType',
+      'typeProductId type vendor purchaseDateProductType eachPriceProductType currentLocationProductType',
   });
 
   this.populate('vendor').populate({
