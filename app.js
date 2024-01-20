@@ -11,7 +11,8 @@ const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const cors = require('cors');
 
-require('dotenv').config({ path: './config.env' });
+require('dotenv').config({ path: `./.env.${process.env.NODE_ENV}` });
+console.log(process.env.NODE_ENV);
 
 // untuk error handling
 const AppError = require('./utils/appError');
