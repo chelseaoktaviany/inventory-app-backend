@@ -5,7 +5,7 @@ const { generateNameSlug } = require('../utils/slugify');
 
 const productTypeSchema = new mongoose.Schema(
   {
-    productTypeId: { type: String, unique: true },
+    typeProductId: { type: String, unique: true },
     type: {
       type: String,
       required: [true, 'Please enter the type of the product!'],
@@ -73,7 +73,7 @@ productTypeSchema.pre('save', async function (next) {
   try {
     const count = await mongoose.models.ProductType.countDocuments();
 
-    productType.productTypeId = (count + 1).toString().padStart(2, '0'); // Generate productTypeId with leading zeros
+    productType.typeProductId = (count + 1).toString().padStart(2, '0'); // Generate productTypeId with leading zeros
 
     next();
   } catch (error) {
